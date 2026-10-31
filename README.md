@@ -83,16 +83,17 @@ Done (2026-10-31):
   templates, gates, workflows, seed ADRs.
 - Gates dogfooded at tier S on this repository (see `CHANGELOG.md` for the
   run record).
+- Pushed as `WyattAu/spec-standards`; engineering-standards DOC-STYLE.md
+  replaced with the pointer stub and ADR 0009 landed there (completing
+  `docs/adr/0003-docstyle-move.md`).
 
 Pending (ordered):
 
-1. Push to `WyattAu/spec-standards`; then land the DOC-STYLE stub + ADR in
-   engineering-standards (blocked on this push; `docs/adr/0003-docstyle-move.md`).
-2. Add `docs:` blocks for all estate repos to `estate.yml`; run
+1. Add `docs:` blocks for all estate repos to `estate.yml`; run
    `spec-audit.py --registry --remote`.
-3. Wire `docs.yml` into kit repos (tier K) in one sweep.
-4. Pilots: one private estate application repo (tier A: truth table +
+2. Wire `docs.yml` into kit repos (tier K) in one sweep.
+3. Pilots: one private estate application repo (tier A: truth table +
    REQUIREMENTS + vendor the uncited external docs, SC-8; instance
    recorded in the private rollout tracker), homebite_docs (tier D).
-5. Enable the monthly bitrot workflow estate-wide; tighten the advisory
+4. Enable the monthly bitrot workflow estate-wide; tighten the advisory
    gates to blocking on the dates in the matrix.
