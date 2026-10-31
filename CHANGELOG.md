@@ -60,3 +60,15 @@ Seed release.
 - CI wave verdicts: 136 wired, green where runnable; 6 wired repos are
   private and blocked on account billing (same as homebite-scraper);
   pediment and bizkit green after this fix and rerun.
+
+## 0.3.0 - 2026-10-31
+
+- SPEC-CORE v1.1.0: SC-11 projection freshness + §11 (packaged skills /
+  MCP are projections of the canon; stale projection fails the gate).
+  ADR-0004. Paired with OMNI-CORE 11p (engineering-standards ADR 0011).
+- doc-lint: lint invocations wrapped in timeouts (a gate that hangs is a
+  gate bug; found while wiring tier A repos over a cold npx cache).
+- Estate: 31 HOLD repos swept + wired (regenerated from pre-sweep state
+  after two repair passes found mechanical damage; record in
+  docs/sweep-2026-10-31.md), 5 tier-A repos adopted with authored truth
+  tables, 9 Omni templates folded (born-conformant derived repos).

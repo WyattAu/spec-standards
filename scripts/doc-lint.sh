@@ -140,15 +140,15 @@ md_fail() {
 }
 if command -v markdownlint >/dev/null 2>&1; then
   if [ -f .markdownlint.json ]; then
-    markdownlint "**/*.md" --config .markdownlint.json || md_fail "markdownlint reported issues"
+    timeout 120 markdownlint "**/*.md" --config .markdownlint.json || md_fail "markdownlint reported issues or timed out"
   else
-    markdownlint "**/*.md" || md_fail "markdownlint reported issues"
+    timeout 120 markdownlint "**/*.md" || md_fail "markdownlint reported issues or timed out"
   fi
 elif command -v npx >/dev/null 2>&1; then
   if [ -f .markdownlint.json ]; then
-    npx -y markdownlint-cli "**/*.md" --config .markdownlint.json || md_fail "markdownlint reported issues"
+    timeout 180 npx -y markdownlint-cli "**/*.md" --config .markdownlint.json || md_fail "markdownlint reported issues or timed out"
   else
-    npx -y markdownlint-cli "**/*.md" || md_fail "markdownlint reported issues"
+    timeout 180 npx -y markdownlint-cli "**/*.md" || md_fail "markdownlint reported issues or timed out"
   fi
 else
   skip "markdownlint not installed (nix devShell provides it; see flake.nix)"
