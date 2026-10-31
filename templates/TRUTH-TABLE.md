@@ -18,4 +18,5 @@ Rules:
 2. The `File` column holds exactly one backticked path per row; the path
    must exist (use a directory path for grouped artifacts, example:
    `docs/adr/`).
-3. Reference implementation: streamformer `AGENTS.md`.
+3. Reference shape: `TRUTH-TABLE.md` in this directory; estate repos
+   adopted under SC-7 keep their instance in the contract file.

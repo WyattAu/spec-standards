@@ -6,10 +6,11 @@
 ## Context
 
 Per-kit specs live centrally today: `engineering-standards/specs/`
-(wire-kit and peers) while implementation-heavy specs live in their repos
-(streamformer `docs/SPEC.md`). Both patterns are load-bearing: wire-kit is
-SPEC-ONLY (pre-implementation, owner sign-off gate), streamformer's spec
-must sit next to the oracle it governs.
+(wire-kit and peers) while implementation-heavy specs live in the repos
+that implement them (accounting-spec's posting-algebra spec and its Lean
+proofs). Both patterns are load-bearing: wire-kit is SPEC-ONLY
+(pre-implementation, owner sign-off gate), and a repo's spec must sit next
+to the oracle it governs.
 
 ## Decision
 

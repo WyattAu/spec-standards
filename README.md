@@ -48,8 +48,8 @@ no gate exists only in CI.
 4. Add the workflow call above with the repo's tier.
 5. Run `scripts/doc-lint.sh <tier>` locally; fix everything before the
    first CI run.
-6. Reference implementations: streamformer (tier S), homebite-scraper
-   (tier A target state), homebite_docs (tier D target state).
+6. Reference implementations: accounting-spec (tier S), homebite_docs
+   (tier D target state).
 
 ## Layout
 
@@ -91,7 +91,8 @@ Pending (ordered):
 2. Add `docs:` blocks for all estate repos to `estate.yml`; run
    `spec-audit.py --registry --remote`.
 3. Wire `docs.yml` into kit repos (tier K) in one sweep.
-4. Pilots: homebite-scraper (tier A: truth table + REQUIREMENTS + vendor
-   the two uncited external docs, SC-8), homebite_docs (tier D).
+4. Pilots: one private estate application repo (tier A: truth table +
+   REQUIREMENTS + vendor the uncited external docs, SC-8; instance
+   recorded in the private rollout tracker), homebite_docs (tier D).
 5. Enable the monthly bitrot workflow estate-wide; tighten the advisory
    gates to blocking on the dates in the matrix.

@@ -2,7 +2,8 @@
 
 One table per research campaign; append-only once frozen (SPEC-CORE §5).
 Each row is one iteration: paper read, disposition, and the deltas it
-produced. Reference implementation: streamformer `docs/RESEARCH_LOG.md`.
+produced. Reference shape: estate research repos keep this ledger at
+`docs/RESEARCH_LOG.md` with the same columns.
 
 | Iter | Date | Source (DOI/URL) | Disposition | Spec delta | Proof delta | Novelty claim |
 |---|---|---|---|---|---|---|
@@ -18,4 +19,4 @@ Dispositions:
 
 Freeze discipline: when a campaign closes, stamp the log
 `FROZEN (<date>)` and score all pre-registered predictions at gates only
-(streamformer ROADMAP §5), never mid-sprint.
+(estate ROADMAP prediction discipline), never mid-sprint.

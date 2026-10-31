@@ -7,12 +7,13 @@
 
 `engineering-standards` governs how code is built, tested, and shipped
 (OMNI-CORE, gate matrix, supply chain). Spec and documentation discipline
-exists but is scattered: streamformer hand-rolled a full spec system
-(`docs/SPEC.md` normative sections, executable oracle, truth table, ADRs,
-freeze stamps); `DOC-STYLE.md` sits in engineering-standards though it
-governs prose estate-wide; homebite-scraper cites two normative external
-documents that are neither vendored nor linked (SPEC-CORE SC-8 failure);
-homebite_docs is a doc factory with no content contract.
+exists but is scattered: estate research repos hand-roll full spec systems
+(numbered normative sections, executable oracle, truth table, ADRs, freeze
+stamps); `DOC-STYLE.md` sits in engineering-standards though it governs
+prose estate-wide; an estate application repo cites normative external
+documents that are neither vendored nor linked (SPEC-CORE SC-8, recorded
+2026-10-31); a public doc-pipeline repo (homebite_docs) is a doc factory
+with no content contract.
 
 ## Decision
 

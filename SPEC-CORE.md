@@ -36,10 +36,10 @@ corrected by moving the artifact to its owner and leaving a pointer.
 | SC-2 | **Normative vs informative is marked; sections are numbered.** Gates, tests, and proofs cite `SPEC §N`, never prose paragraphs. | Citations must resolve mechanically (`doc-lint.sh`, `spec-audit.py` grep section headers). |
 | SC-3 | **Every normative statement carries an enforcement citation**: theorem name, golden-vector set, gate name, or test name. Generalizes the DOC-STYLE citation rule to specs. | A spec claim nobody enforces is a wish (DOC-STYLE §3: unlinked claims are draft material). |
 | SC-4 | **REQ traceability anchors.** Specs carry `REQ-<DOMAIN>-NNN` ids in a requirements table; public implementation items carry doc-comment tags citing their REQ; at tier S every REQ names at least one verifying test or theorem. | Traceability is the defense-grade spine already proven by `engineering-standards/specs/wire-kit.md`; the standard promotes it from per-kit practice to estate invariant. |
-| SC-5 | **Spec lifecycle: DRAFT, REVIEW, CURRENT, FROZEN, SUPERSEDED.** Frozen specs are append-only and carry a freeze date; superseded specs carry a successor pointer; corrections are logged, not erased (§5). | Frozen artifacts (streamformer `ASIC_PATH.md` "frozen 2026-10-30") must be distinguishable from living ones, or predictions scored at gates have no stable referent. |
-| SC-6 | **Executable-oracle rule.** A spec that defines semantics (numeric, wire, algebra, schedule) ships an executable oracle (Lean definition, Python reference, vector generator) and cites it bidirectionally; committed golden vectors regenerate diff-clean. | Prose-only semantics specs rot against the code; streamformer `proofs/Sem.lean` and the accounting-spec posting algebra are the proven pattern. |
+| SC-5 | **Spec lifecycle: DRAFT, REVIEW, CURRENT, FROZEN, SUPERSEDED.** Frozen specs are append-only and carry a freeze date; superseded specs carry a successor pointer; corrections are logged, not erased (§5). | Frozen artifacts (estate strategy and risk docs carry explicit freeze dates, e.g. "frozen 2026-10-30") must be distinguishable from living ones, or predictions scored at gates have no stable referent. |
+| SC-6 | **Executable-oracle rule.** A spec that defines semantics (numeric, wire, algebra, schedule) ships an executable oracle (Lean definition, Python reference, vector generator) and cites it bidirectionally; committed golden vectors regenerate diff-clean. | Prose-only semantics specs rot against the code; the accounting-spec posting algebra and estate research repos' Lean oracles with golden-vector sets are the proven pattern. |
 | SC-7 | **Registry of record.** Each repo's docs posture is declared in the estate registry (`docs:` block, §7) and audited by `scripts/spec-audit.py`; the audit fails when the registry and reality disagree. | The engineering standard works because `estate-audit.py` fails on lies; docs get the same discipline. |
-| SC-8 | **External normative sources are vendored or stably linked.** A spec or doc may not cite an uncitable external document ("the D12 pipeline doc", "their data-protection chapter") without a stable URL or a vendored copy under `docs/refs/`. | First observed failure: homebite-scraper README normative rules cite two documents outside git; under DOC-STYLE §3 those claims are draft material. |
+| SC-8 | **External normative sources are vendored or stably linked.** A spec or doc may not cite an uncitable external document ("the D12 pipeline doc", "their data-protection chapter") without a stable URL or a vendored copy under `docs/refs/`. | First observed failure, recorded 2026-10-31 in an estate application repo: normative rules in a README cite documents outside git; under DOC-STYLE §3 those claims are draft material. |
 | SC-9 | **Gates are mechanical and local-first.** `scripts/*` do the work; CI mirrors exactly those scripts (OMNI-CORE 1). Every gate in §9 runs from a shell with no secrets and no CI-only steps. | Local green implies CI green; anything else trains agents to bypass the gate. |
 | SC-10 | **llms.txt is the projection, gated.** Where required (§8) `llms.txt` exists, contains no placeholders, mirrors truth-table links, and is regenerated when spec files change. | Invariant 11i applied to specs: every agent reads the same contract. |
 
@@ -64,7 +64,8 @@ Rules:
    a gate failure.
 2. The `File` column holds exactly one backticked path per row; the path
    must exist in the repo (gate: `doc-lint.sh`).
-3. Reference implementation: streamformer `AGENTS.md`.
+3. Reference shape: `templates/TRUTH-TABLE.md`; estate repos adopted under
+   SC-7 maintain their own instance in the contract file.
 
 ## §4 REQ traceability anchors
 
@@ -95,14 +96,14 @@ Rules:
 
 1. `FROZEN` requires an ISO date in the line (gate-enforced); content is
    append-only after freeze; corrections arrive as a new version whose
-   header names the corrected items (precedent: streamformer SPEC v2
-   "corrected invariants").
+   header names the corrected items (precedent: estate spec headers that
+   note "corrected invariants" per version).
 2. `SUPERSEDED` requires `by <path>` (gate-enforced); the successor file
    must exist.
 3. Every material change is logged twice: the spec header version note and
    one entry in `CHANGELOG.md` or `RESEARCH_LOG.md`.
 4. Predictions and dated claims inside frozen docs are scored only at
-   gates, never mid-sprint (streamformer ROADMAP §5 discipline).
+   gates, never mid-sprint (estate ROADMAP prediction discipline).
 
 ## §6 Executable oracle
 
@@ -112,8 +113,9 @@ Rules:
 2. The spec carries a header line `**Oracle:** <path>` naming the oracle;
    the oracle's header comment names the spec file and section (§2).
 3. Golden vectors are committed; regeneration is deterministic and
-   `git diff` clean (streamformer `proofs/Main.lean` + `proofs/vectors/`,
-   `make golden`).
+   `git diff` clean (precedents: `accounting-spec` Lean posting algebra
+   with committed theorem discipline; estate research repos ship
+   `lake exe golden` vector sets).
 4. Tier S specs without an oracle line or an explicit `No-oracle:` line
    fail `doc-lint.sh`.
 
@@ -126,7 +128,7 @@ block per repo:
 
 ```yaml
 repos:
-  streamformer:
+  <repo>:
     docs:
       tier: s
       specs: [docs/SPEC.md]
@@ -154,9 +156,9 @@ postdates `last_audit` (projection or posture went stale).
 
 | Tier | Repos | Rationale |
 |---|---|---|
-| **S** spec-heavy | streamformer, accounting-spec, spec-standards itself | semantics governed by SC-3/4/6 |
+| **S** spec-heavy | accounting-spec, spec-standards itself, plus estate research repos | semantics governed by SC-3/4/6 |
 | **K** library kits | the kit estate | public interfaces need REQ anchors and projections, not full oracles |
-| **A** application/business | homebite-scraper and peers | normative business rules in README/REQUIREMENTS need truth tables and citable external sources (SC-8) |
+| **A** application/business | estate application repos | normative business rules in README/REQUIREMENTS need truth tables and citable external sources (SC-8) |
 | **D** doc pipelines | homebite_docs and peers | the artifact is documents; build reproducibility and link rot dominate |
 
 The per-tier blocking matrix of mechanical gates lives in
