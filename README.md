@@ -101,22 +101,28 @@ Done (2026-10-31):
 - Gates 0.1.1: dated advisory windows at tiers k/d (2027-04), caller
   checkout fix for `docs.yml`, spec-audit tier logic aligned with the
   matrix.
+- Gates 0.2.0: advisory windows self-flip on their dates in both gates;
+  this repo runs its own CI (`ci.yml`).
 - Pilot sweep: wire-kit wired at tier k (docs CI green); accounting-spec
   brought to tier S conformance (status + oracle lines, truth table,
   llms.txt, em-dash sweep; docs CI green); homebite-scraper wired at
   tier A (truth table, REQUIREMENTS REQ-HOME-001..008, llms.txt, SC-8
   closed by vendoring D12 + the data-protection chapter with provenance).
+- Estate sweep executed (record: `docs/sweep-2026-10-31.md`): 136 repos
+  wired and pushed, zero push/commit/clone failures; homebite_docs swept
+  and wired at tier D (598 instances, 45 files); accounting-spec
+  graduated to `current` in the registry.
 
 Pending (ordered):
 
-1. Estate sweep: wire the remaining crate repos (core first) with
-   `.github/workflows/docs.yml` + `.markdownlint.json`; pre-flight each
-   with `doc-lint.sh` before the commit.
-2. homebite_docs (tier D): held; 598 em-dash hits across 236 files need
-   the DOC-STYLE §4 mechanical sweep with human diff review first.
+1. 34 HOLD repos (large prose debt; list in `docs/sweep-2026-10-31.md`):
+   reviewed sweep per DOC-STYLE §4, then wire. engineering-standards
+   itself is one of them (196 hits): owner-reviewed, not mechanical.
+2. 5 HOLDA repos (tier A): authored artifacts (truth table, REQUIREMENTS,
+   llms.txt) per the scraper-pilot pattern, then wire.
 3. homebite-scraper CI: blocked on account billing (spending limit for
    private-repo minutes), not on the gate; rerun once billing clears.
-4. Graduate registry postures `draft` → `current` per repo as CI lands;
-   llms.txt for the 14-repo gap before the 2027-04 window closes.
-5. Enable the monthly bitrot workflow estate-wide; tighten the advisory
-   gates to blocking on the dates in the matrix.
+4. Watch the CI wave drain; graduate wired repos to `current` as each
+   earns conformance (truth table + llms.txt authored), not just CI green.
+5. Close the 14/253 llms.txt gap before the 2027-04 window; the gates
+   flip to blocking automatically on the matrix dates.
