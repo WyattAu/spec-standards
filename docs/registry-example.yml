@@ -1,0 +1,22 @@
+# Minimal example of the SPEC-CORE §7 registry `docs:` block.
+# The registry of record is engineering-standards estate.yml; this file
+# exists so `spec-audit.py --registry docs/registry-example.yml` can be
+# exercised offline.
+schema: 1
+repos:
+  streamformer:
+    docs:
+      tier: s
+      specs: [docs/SPEC.md]
+      truth_table: AGENTS.md
+      llms_txt: true
+      status: current
+      last_audit: "2026-10-31"
+  homebite-scraper:
+    docs:
+      tier: a
+      specs: []
+      truth_table: README.md
+      llms_txt: false
+      status: draft
+      last_audit: "2026-10-31"

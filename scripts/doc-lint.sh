@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+# doc-lint: tier-aware prose and structure gate (SPEC-CORE §9).
+# Usage: scripts/doc-lint.sh [s|k|a|d] [--req-check]
+# Runs from the repository root. Scripts are canonical; CI mirrors this
+# script exactly (SPEC-CORE SC-9). Exits 1 on any FAIL, 0 otherwise.
+set -u
+
+TIER="k"
+REQ_CHECK=0
+for arg in "$@"; do
+  case "$arg" in
+    s|k|a|d) TIER="$arg" ;;
+    --req-check) REQ_CHECK=1 ;;
+    *) echo "usage: doc-lint.sh [s|k|a|d] [--req-check]" >&2; exit 2 ;;
+  esac
+done
+
+FAILS=0
+fail()    { echo "FAIL: $*"; FAILS=$((FAILS + 1)); }
+advisory(){ echo "ADVISORY: $*"; }
+skip()    { echo "SKIP: $*"; }
+
+EM=$(printf '\342\200\224')   # the em-dash character, constructed not typed
+
+# --- 1. Character rule (DOC-STYLE §1): no em-dash in any Markdown -------
+HITS=$(grep -rIn --include='*.md' "$EM" . --exclude-dir=.git 2>/dev/null || true)
+if [ -n "$HITS" ]; then
+  fail "em-dash present (DOC-STYLE §1); first offenders:"
+  echo "$HITS" | head -5
+fi
+
+# --- 2. Status stamps (SPEC-CORE §5): FROZEN needs a date,
+#        SUPERSEDED needs a successor -------------------------------------
+STAMP_LINES=$(grep -rhE 'Status:.*(FROZEN|SUPERSEDED)' --include='*.md' . --exclude-dir=.git 2>/dev/null || true)
+while IFS= read -r LINE; do
+  [ -z "$LINE" ] && continue
+  case "$LINE" in
+    *FROZEN*)
+      echo "$LINE" | grep -qE '[0-9]{4}-[0-9]{2}-[0-9]{2}' \
+        || fail "FROZEN stamp without ISO date (SPEC-CORE §5): $LINE"
+      ;;
+    *SUPERSEDED*)
+      echo "$LINE" | grep -q ' by ' \
+        || fail "SUPERSEDED stamp without successor (SPEC-CORE §5): $LINE"
+      ;;
+  esac
+done <<EOF2
+$STAMP_LINES
+EOF2
+
+# --- 3. Truth table (SPEC-CORE §3): heading present, paths exist --------
+truth_check() {  # $1 = severity: fail | advisory
+  local SEV="$1" CONTRACT SECTION ROWS PATHS P
+  if [ -f AGENTS.md ]; then CONTRACT=AGENTS.md; else CONTRACT=README.md; fi
+  if [ ! -f "$CONTRACT" ]; then
+    "$SEV" "no contract file (AGENTS.md or README.md) for the truth table (SC-1)"
+    return
+  fi
+  SECTION=$(awk '/^## Where the truth lives/{f=1;next} /^## /{f=0} f' "$CONTRACT")
+  ROWS=$(printf '%s\n' "$SECTION" | grep -cE '^\|.*\|[[:space:]]*`[^`]+`[[:space:]]*\|[[:space:]]*$' || true)
+  if [ "${ROWS:-0}" -lt 1 ]; then
+    "$SEV" "$CONTRACT: truth table has no path rows (SPEC-CORE §3)"
+    return
+  fi
+  PATHS=$(printf '%s\n' "$SECTION" | grep -oE '`[^`]+`' | sed 's/`//g' | sort -u)
+  while IFS= read -r P; do
+    [ -z "$P" ] && continue
+    if [ ! -e "$P" ]; then "$SEV" "truth-table path missing: $P (SC-1)"; fi
+  done <<EOF3
+$PATHS
+EOF3
+}
+case "$TIER" in
+  s|a) truth_check fail ;;
+  k)   truth_check advisory ;;
+  d)   skip "truth table not required at tier d" ;;
+esac
+
+# --- 4. llms.txt projection (SPEC-CORE SC-10) ---------------------------
+llms_check() {  # $1 = severity
+  local SEV="$1"
+  if [ ! -f llms.txt ]; then "$SEV" "llms.txt missing (SC-10)"; return; fi
+  if grep -nE 'TODO|PLACEHOLDER|TBD|FIXME' llms.txt >/dev/null 2>&1; then
+    "$SEV" "llms.txt contains placeholders (SC-10):"
+    grep -nE 'TODO|PLACEHOLDER|TBD|FIXME' llms.txt | head -5
+  fi
+}
+case "$TIER" in
+  s|k|a) llms_check fail ;;
+  d)     llms_check advisory ;;
+esac
+
+# --- 5. Oracle line (SPEC-CORE §6), tier S ------------------------------
+if [ "$TIER" = "s" ]; then
+  while IFS= read -r F; do
+    [ -z "$F" ] && continue
+    if ! grep -q 'Oracle:' "$F" && ! grep -q 'No-oracle' "$F"; then
+      fail "$F: no 'Oracle:' or 'No-oracle:' line (SPEC-CORE §6)"
+    fi
+  done <<EOF5
+$(find . -name 'SPEC*.md' -not -path './.git/*' 2>/dev/null)
+EOF5
+fi
+
+# --- 6. REQ cross-check (SPEC-CORE §4): advisory ------------------------
+if [ "$TIER" = "s" ] || [ "$REQ_CHECK" -eq 1 ]; then
+  SPECS=$(find . -name 'SPEC*.md' -not -path './.git/*' 2>/dev/null || true)
+  SPEC_REQS=$(grep -rhoE 'REQ-[A-Z][A-Z0-9]*-[0-9]{3}' $SPECS 2>/dev/null | sort -u || true)
+  CODE_REQS=$(grep -rhoE 'REQ-[A-Z][A-Z0-9]*-[0-9]{3}' \
+    --include='*.py' --include='*.rs' --include='*.sh' --include='*.hs' \
+    --include='*.lean' --include='*.ts' --include='*.go' --include='*.c' \
+    --include='*.h' --include='*.cpp' --include='*.dart' \
+    . --exclude-dir=.git 2>/dev/null | sort -u || true)
+  ORPHANS=$(comm -23 <(printf '%s\n' "$SPEC_REQS" | sort -u) <(printf '%s\n' "$CODE_REQS" | sort -u) | sed '/^$/d' || true)
+  if [ -n "$ORPHANS" ]; then
+    advisory "REQs defined in specs with no code tag (SPEC-CORE §4): $(echo "$ORPHANS" | tr '\n' ' ')"
+  fi
+else
+  skip "REQ cross-check not enabled (tier $TIER, no --req-check)"
+fi
+
+# --- 7. markdownlint (optional tool; used when installed) ---------------
+if command -v markdownlint >/dev/null 2>&1; then
+  if [ -f .markdownlint.json ]; then
+    markdownlint "**/*.md" --config .markdownlint.json || fail "markdownlint reported issues"
+  else
+    markdownlint "**/*.md" || fail "markdownlint reported issues"
+  fi
+elif command -v npx >/dev/null 2>&1; then
+  if [ -f .markdownlint.json ]; then
+    npx -y markdownlint-cli "**/*.md" --config .markdownlint.json || fail "markdownlint reported issues"
+  else
+    npx -y markdownlint-cli "**/*.md" || fail "markdownlint reported issues"
+  fi
+else
+  skip "markdownlint not installed (nix devShell provides it; see flake.nix)"
+fi
+
+if [ "$FAILS" -gt 0 ]; then
+  echo "doc-lint: FAIL (tier $TIER, $FAILS failure(s))"
+  exit 1
+fi
+echo "doc-lint: PASS (tier $TIER)"

@@ -1,0 +1,19 @@
+# spec-standards
+
+> Specification and documentation standard for the WyattAu estate: ten
+> invariants (SPEC-CORE), prose rules (DOC-STYLE), tiered gates (S/K/A/D),
+> registry schema, and templates. Sibling of engineering-standards, which
+> owns code gates; the two reference each other and never fork.
+
+- [SPEC-CORE](SPEC-CORE.md): the ten invariants, truth-table/REQ/lifecycle
+  formats, oracle rule, registry schema, tiers, gate inventory
+- [DOC-STYLE](DOC-STYLE.md): prose register, citation rule, character rule,
+  status stamps
+- [README](README.md): gate matrix, adoption snippet, rollout status
+- [AGENTS](AGENTS.md): repo contract and truth table
+- templates/: SPEC, ADR, TRUTH-TABLE, RESEARCH_LOG skeletons; REQUIREMENTS
+  and THREAT-MODEL templates remain owned by engineering-standards
+- scripts/doc-lint.sh, scripts/spec-audit.py: the mechanical gates
+  (POSIX shell + python3; markdownlint and PyYAML optional per script)
+- docs/adr/: seed decisions 0001 (concern split), 0002 (spec location),
+  0003 (DOC-STYLE move)

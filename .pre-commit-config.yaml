@@ -1,0 +1,17 @@
+# pre-commit mirrors CI gates (OMNI-CORE 6, SPEC-CORE SC-9)
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+  - repo: local
+    hooks:
+      - id: doc-lint
+        name: doc-lint (tier s)
+        entry: scripts/doc-lint.sh s
+        language: system
+        pass_filenames: false
+        files: '\.(md|txt|sh|py|yml|json)$'

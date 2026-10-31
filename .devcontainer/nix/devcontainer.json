@@ -1,0 +1,12 @@
+{
+  "name": "spec-standards (nix + direnv)",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/nix:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "nix develop -c true",
+  "containerEnv": {
+    "ENV": "/etc/profile.d/devcontainer-nix.sh"
+  }
+}

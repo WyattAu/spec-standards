@@ -1,0 +1,43 @@
+# Shared docs gate: reusable workflow consumed by every estate repo
+# (SPEC-CORE §9). Scripts are canonical; this workflow only mirrors them.
+# Actions pinned to latest majors (checkout v7, setup-node v7, 2026-10);
+# pin to commit SHAs per OMNI-CORE 11j before any release-critical use.
+name: docs
+
+on:
+  workflow_call:
+    inputs:
+      tier:
+        description: "Docs tier: s | k | a | d (SPEC-CORE §8)"
+        required: false
+        default: k
+        type: string
+      run_audit:
+        description: "Run scripts/spec-audit.py --repo after doc-lint"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  doc-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0   # spec-audit freshness checks use git history
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: doc-lint (tier ${{ inputs.tier }})
+        run: scripts/doc-lint.sh "${{ inputs.tier }}"
+
+      - name: spec-audit (repo mode)
+        if: inputs.run_audit
+        run: |
+          python3 -m pip install --quiet pyyaml || true
+          python3 scripts/spec-audit.py --repo . --tier "${{ inputs.tier }}"

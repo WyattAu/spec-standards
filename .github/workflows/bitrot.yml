@@ -1,0 +1,36 @@
+# Monthly bitrot for prose: link rot is the docs analog of ecosystem drift
+# (OMNI-CORE 7 applied to documentation). Advisory until 2027-04
+# (README gate matrix); failures still produce a report artifact.
+name: bitrot
+
+on:
+  schedule:
+    - cron: "0 6 1 * *"   # first of the month, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: lychee link check
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress --max-retries 2
+            --exclude localhost --exclude '^mailto:'
+            './**/*.md'
+
+      - name: upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: lychee-report.json
+          if-no-files-found: ignore

@@ -1,0 +1,9 @@
+.direnv/
+result
+result-*
+node_modules/
+__pycache__/
+*.pyc
+.lycheecache
+lychee-report.json
+.DS_Store
