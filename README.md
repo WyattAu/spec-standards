@@ -22,15 +22,22 @@ jobs:
 | Check (cites SPEC-CORE) | Tier S | Tier K | Tier A | Tier D |
 |---|---|---|---|---|
 | em-dash grep (DOC-STYLE §1) | ✅ | ✅ | ✅ | ✅ |
-| markdownlint (`.markdownlint.json`) | ✅ | ✅ | ✅ | ✅ |
-| llms.txt present, no placeholders (SC-10) | ✅ | ✅ | ✅ | advisory |
-| truth table present, paths exist (SC-1, §3) | ✅ | advisory | ✅ | : |
+| markdownlint (`.markdownlint.json`) | ✅ | advisory → ✅ 2027-04 | advisory → ✅ 2027-04 | advisory → ✅ 2027-04 |
+| llms.txt present, no placeholders (SC-10) | ✅ | advisory → ✅ 2027-04 | ✅ | advisory |
+| truth table present, paths exist (SC-1, §3) | ✅ | advisory → ✅ 2027-04 | ✅ | : |
 | status stamps well-formed (SC-5, §5) | ✅ | ✅ | ✅ | ✅ |
 | oracle line or No-oracle (SC-6, §6) | ✅ | if semantics | if semantics | : |
 | REQ cross-check spec↔code (SC-4, §4) | ✅ (blocking 2027-01) | advisory | advisory | : |
 | llms.txt freshness vs specs (SC-10) | advisory→✅ 2027-01 | advisory→✅ 2027-01 | advisory | : |
 | link rot: lychee, monthly bitrot | ✅ (advisory until 2027-04) | ✅ (advisory) | ✅ (advisory) | ✅ (advisory) |
 | registry `docs:` block valid (SC-7, §7) | ✅ | ✅ | ✅ | ✅ |
+
+Advisory windows follow the gate-matrix precedent set by llvm-cov tier C
+("informational until"): gates land reporting, estates fix forward, then
+the date flips them blocking in one sweep. Reason for the 2027-04 window:
+the 2026-10-31 probe found 14 of 253 repos with llms.txt and 28 with
+AGENTS.md; blocking on day one would have red every kit CI with no path
+to green.
 
 Implementation: all checks live in `scripts/doc-lint.sh` (POSIX shell;
 markdownlint used when installed) and `scripts/spec-audit.py` (repo mode

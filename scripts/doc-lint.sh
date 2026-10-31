@@ -49,7 +49,8 @@ $STAMP_LINES
 EOF2
 
 # --- 3. Truth table (SPEC-CORE §3): heading present, paths exist --------
-truth_check() {  # $1 = severity: fail | advisory
+# Blocking at tiers s,a; advisory at tier k until 2027-04 (README matrix).
+truth_check() {  # $1 = severity: fail | advisory | skip
   local SEV="$1" CONTRACT SECTION ROWS PATHS P
   if [ -f AGENTS.md ]; then CONTRACT=AGENTS.md; else CONTRACT=README.md; fi
   if [ ! -f "$CONTRACT" ]; then
@@ -77,6 +78,7 @@ case "$TIER" in
 esac
 
 # --- 4. llms.txt projection (SPEC-CORE SC-10) ---------------------------
+# Blocking at tiers s,a; advisory at tiers k,d until 2027-04.
 llms_check() {  # $1 = severity
   local SEV="$1"
   if [ ! -f llms.txt ]; then "$SEV" "llms.txt missing (SC-10)"; return; fi
@@ -86,8 +88,8 @@ llms_check() {  # $1 = severity
   fi
 }
 case "$TIER" in
-  s|k|a) llms_check fail ;;
-  d)     llms_check advisory ;;
+  s|a) llms_check fail ;;
+  k|d) llms_check advisory ;;
 esac
 
 # --- 5. Oracle line (SPEC-CORE §6), tier S ------------------------------
@@ -120,17 +122,19 @@ else
 fi
 
 # --- 7. markdownlint (optional tool; used when installed) ---------------
+# Blocking at tier s; advisory at tiers k,a,d until 2027-04 (README matrix).
+md_fail() { if [ "$TIER" = "s" ]; then fail "$*"; else advisory "$*"; fi; }
 if command -v markdownlint >/dev/null 2>&1; then
   if [ -f .markdownlint.json ]; then
-    markdownlint "**/*.md" --config .markdownlint.json || fail "markdownlint reported issues"
+    markdownlint "**/*.md" --config .markdownlint.json || md_fail "markdownlint reported issues"
   else
-    markdownlint "**/*.md" || fail "markdownlint reported issues"
+    markdownlint "**/*.md" || md_fail "markdownlint reported issues"
   fi
 elif command -v npx >/dev/null 2>&1; then
   if [ -f .markdownlint.json ]; then
-    npx -y markdownlint-cli "**/*.md" --config .markdownlint.json || fail "markdownlint reported issues"
+    npx -y markdownlint-cli "**/*.md" --config .markdownlint.json || md_fail "markdownlint reported issues"
   else
-    npx -y markdownlint-cli "**/*.md" || fail "markdownlint reported issues"
+    npx -y markdownlint-cli "**/*.md" || md_fail "markdownlint reported issues"
   fi
 else
   skip "markdownlint not installed (nix devShell provides it; see flake.nix)"

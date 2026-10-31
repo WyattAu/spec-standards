@@ -16,3 +16,18 @@ Seed release.
   THREAT-MODEL remain owned by engineering-standards (AGENTS.md rule 4).
 - Seed ADRs: 0001 concern split, 0002 spec location rule, 0003 DOC-STYLE
   move.
+
+## 0.1.1 - 2026-10-31
+
+- docs.yml reusable workflow: gate scripts now checked out from
+  spec-standards into `gate-tools` (persist-credentials: false); caller
+  repos no longer need the scripts locally. Fixes the external-caller
+  path bug in 0.1.0.
+- Gate softening with dated windows (README matrix): markdownlint,
+  llms.txt, and truth-table advisories at tiers k/d until 2027-04;
+  em-dash and status stamps stay blocking everywhere. Precedent:
+  llvm-cov tier C "informational until". Rationale: 2026-10-31 estate
+  probe found 14/253 repos with llms.txt, 28 with AGENTS.md.
+- Estate rollout: registry docs blocks landed in engineering-standards
+  (ADR 0010 there): 177 blocks from probes; spec-standards registered
+  (infra/support).

@@ -1,5 +1,7 @@
 # Shared docs gate: reusable workflow consumed by every estate repo
-# (SPEC-CORE §9). Scripts are canonical; this workflow only mirrors them.
+# (SPEC-CORE §9). Scripts are canonical and live in spec-standards; the
+# caller's repo is checked out for auditing, the gate tools are checked
+# out separately (persist-credentials: false, OMNI-CORE 10/11).
 # Actions pinned to latest majors (checkout v7, setup-node v7, 2026-10);
 # pin to commit SHAs per OMNI-CORE 11j before any release-critical use.
 name: docs
@@ -29,15 +31,23 @@ jobs:
         with:
           fetch-depth: 0   # spec-audit freshness checks use git history
 
+      - name: check out gate scripts (spec-standards)
+        uses: actions/checkout@v7
+        with:
+          repository: WyattAu/spec-standards
+          ref: main
+          path: gate-tools
+          persist-credentials: false
+
       - uses: actions/setup-node@v7
         with:
           node-version: 24
 
       - name: doc-lint (tier ${{ inputs.tier }})
-        run: scripts/doc-lint.sh "${{ inputs.tier }}"
+        run: gate-tools/scripts/doc-lint.sh "${{ inputs.tier }}"
 
       - name: spec-audit (repo mode)
         if: inputs.run_audit
         run: |
           python3 -m pip install --quiet pyyaml || true
-          python3 scripts/spec-audit.py --repo . --tier "${{ inputs.tier }}"
+          python3 gate-tools/scripts/spec-audit.py --repo . --tier "${{ inputs.tier }}"
