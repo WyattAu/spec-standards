@@ -93,14 +93,30 @@ Done (2026-10-31):
 - Pushed as `WyattAu/spec-standards`; engineering-standards DOC-STYLE.md
   replaced with the pointer stub and ADR 0009 landed there (completing
   `docs/adr/0003-docstyle-move.md`).
+- Registry: `docs:` blocks landed in engineering-standards `estate.yml`
+  (ADR 0010 there): 177 blocks seeded from per-repo probes (168 k, 1 s,
+  8 a); `estate-audit.py` validates the schema; this repo registered
+  (infra/support). Verified against live GitHub + crates.io: zero new
+  findings.
+- Gates 0.1.1: dated advisory windows at tiers k/d (2027-04), caller
+  checkout fix for `docs.yml`, spec-audit tier logic aligned with the
+  matrix.
+- Pilot sweep: wire-kit wired at tier k (docs CI green); accounting-spec
+  brought to tier S conformance (status + oracle lines, truth table,
+  llms.txt, em-dash sweep; docs CI green); homebite-scraper wired at
+  tier A (truth table, REQUIREMENTS REQ-HOME-001..008, llms.txt, SC-8
+  closed by vendoring D12 + the data-protection chapter with provenance).
 
 Pending (ordered):
 
-1. Add `docs:` blocks for all estate repos to `estate.yml`; run
-   `spec-audit.py --registry --remote`.
-2. Wire `docs.yml` into kit repos (tier K) in one sweep.
-3. Pilots: one private estate application repo (tier A: truth table +
-   REQUIREMENTS + vendor the uncited external docs, SC-8; instance
-   recorded in the private rollout tracker), homebite_docs (tier D).
-4. Enable the monthly bitrot workflow estate-wide; tighten the advisory
+1. Estate sweep: wire the remaining crate repos (core first) with
+   `.github/workflows/docs.yml` + `.markdownlint.json`; pre-flight each
+   with `doc-lint.sh` before the commit.
+2. homebite_docs (tier D): held; 598 em-dash hits across 236 files need
+   the DOC-STYLE §4 mechanical sweep with human diff review first.
+3. homebite-scraper CI: blocked on account billing (spending limit for
+   private-repo minutes), not on the gate; rerun once billing clears.
+4. Graduate registry postures `draft` → `current` per repo as CI lands;
+   llms.txt for the 14-repo gap before the 2027-04 window closes.
+5. Enable the monthly bitrot workflow estate-wide; tighten the advisory
    gates to blocking on the dates in the matrix.
