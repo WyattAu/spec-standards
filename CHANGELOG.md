@@ -46,3 +46,17 @@ Seed release.
 - Estate sweep: shared docs gate + bitrot + canonical markdownlint config
   wired across the registered estate, pre-flighted per repo (em-dash
   sweep applied where small and reviewed; large-prose repos held).
+
+## 0.2.1 - 2026-10-31
+
+- Vendored trees out of scope: the gates exclude `node_modules/`,
+  `vendor/`, `dist/` from em-dash/stamp/SPEC discovery (DOC-STYLE §1
+  scope note added). Motivated by pediment: a committed vendored tree
+  failed the gate on first wire while the local sweep walker (which
+  already excluded it) saw nothing.
+- spec-audit repo mode: a missing AGENTS.md/README.md follows tier
+  severity now (advisory at k/d, blocking at s/a); bizkit exposed the
+  unconditional fail.
+- CI wave verdicts: 136 wired, green where runnable; 6 wired repos are
+  private and blocked on account billing (same as homebite-scraper);
+  pediment and bizkit green after this fix and rerun.

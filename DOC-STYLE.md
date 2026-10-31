@@ -14,6 +14,11 @@ meaning that those do not, and it renders inconsistently across terminals
 and fonts. This file itself is written without one; the check below
 constructs the character with `printf` so the rule is self-consistent.
 
+Scope: the rule covers estate-authored documents. Vendored trees
+(`node_modules/`, `vendor/`, `dist/`) are upstream's prose and are
+excluded from the gate's scan (enforced in `doc-lint.sh` since 0.2.1;
+motivated by a committed vendored tree failing the gate on first wire).
+
 Check any tree with:
 
 ```bash

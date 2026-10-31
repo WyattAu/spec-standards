@@ -73,7 +73,8 @@ def audit_repo(root: Path, tier: str, strict_freshness: bool) -> int:
     if not contract.exists():
         contract = root / "README.md"
     if not contract.exists():
-        fails.append("no AGENTS.md or README.md; truth table has no home (SC-1)")
+        msg = "no AGENTS.md or README.md; truth table has no home (SC-1)"
+        (fails if tier in ("s", "a") else advisories).append(msg)
         contract = None
 
     if contract is not None:
@@ -93,7 +94,7 @@ def audit_repo(root: Path, tier: str, strict_freshness: bool) -> int:
     # oracle lines (§6, tier S)
     if tier == "s":
         for f in sorted(root.rglob("SPEC*.md")):
-            if ".git" in f.parts:
+            if any(x in f.parts for x in (".git", "node_modules", "vendor", "dist")):
                 continue
             body = f.read_text(encoding="utf-8", errors="replace")
             if "Oracle:" not in body and "No-oracle" not in body:
@@ -118,7 +119,7 @@ def audit_repo(root: Path, tier: str, strict_freshness: bool) -> int:
     )
     if llms.exists() and contract is not None:
         watched = sorted(root.rglob("SPEC*.md")) + [contract]
-        watched = [f for f in watched if ".git" not in f.parts]
+        watched = [f for f in watched if not any(x in f.parts for x in (".git", "node_modules", "vendor", "dist"))]
         newest = max((git_time(f) for f in watched), default=0)
         mine = git_time(llms)
         if newest and mine and mine < newest:

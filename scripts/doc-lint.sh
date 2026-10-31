@@ -31,7 +31,7 @@ SEV_KD="advisory"; [ "$TODAY" -ge "$WINDOW_2027_04" ] && SEV_KD="fail"
 SEV_0101="advisory"; [ "$TODAY" -ge "$WINDOW_2027_01" ] && SEV_0101="fail"
 
 # --- 1. Character rule (DOC-STYLE §1): no em-dash in any Markdown -------
-HITS=$(grep -rIn --include='*.md' "$EM" . --exclude-dir=.git 2>/dev/null || true)
+HITS=$(grep -rIn --include='*.md' "$EM" . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=dist 2>/dev/null || true)
 if [ -n "$HITS" ]; then
   fail "em-dash present (DOC-STYLE §1); first offenders:"
   echo "$HITS" | head -5
@@ -39,7 +39,7 @@ fi
 
 # --- 2. Status stamps (SPEC-CORE §5): FROZEN needs a date,
 #        SUPERSEDED needs a successor -------------------------------------
-STAMP_LINES=$(grep -rhE 'Status:.*(FROZEN|SUPERSEDED)' --include='*.md' . --exclude-dir=.git 2>/dev/null || true)
+STAMP_LINES=$(grep -rhE 'Status:.*(FROZEN|SUPERSEDED)' --include='*.md' . --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=vendor --exclude-dir=dist 2>/dev/null || true)
 while IFS= read -r LINE; do
   [ -z "$LINE" ] && continue
   case "$LINE" in
@@ -108,13 +108,13 @@ if [ "$TIER" = "s" ]; then
       fail "$F: no 'Oracle:' or 'No-oracle:' line (SPEC-CORE §6)"
     fi
   done <<EOF5
-$(find . -name 'SPEC*.md' -not -path './.git/*' 2>/dev/null)
+$(find . -name 'SPEC*.md' -not -path './.git/*' -not -path '*/node_modules/*' -not -path '*/vendor/*' -not -path '*/dist/*' 2>/dev/null)
 EOF5
 fi
 
 # --- 6. REQ cross-check (SPEC-CORE §4): advisory ------------------------
 if [ "$TIER" = "s" ] || [ "$REQ_CHECK" -eq 1 ]; then
-  SPECS=$(find . -name 'SPEC*.md' -not -path './.git/*' 2>/dev/null || true)
+  SPECS=$(find . -name 'SPEC*.md' -not -path './.git/*' -not -path '*/node_modules/*' -not -path '*/vendor/*' -not -path '*/dist/*' 2>/dev/null || true)
   SPEC_REQS=$(grep -rhoE 'REQ-[A-Z][A-Z0-9]*-[0-9]{3}' $SPECS 2>/dev/null | sort -u || true)
   CODE_REQS=$(grep -rhoE 'REQ-[A-Z][A-Z0-9]*-[0-9]{3}' \
     --include='*.py' --include='*.rs' --include='*.sh' --include='*.hs' \
