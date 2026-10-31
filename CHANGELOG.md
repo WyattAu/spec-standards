@@ -72,3 +72,7 @@ Seed release.
   after two repair passes found mechanical damage; record in
   docs/sweep-2026-10-31.md), 5 tier-A repos adopted with authored truth
   tables, 9 Omni templates folded (born-conformant derived repos).
+
+- doc-lint: a lint TIMEOUT is environmental and SKIPs locally (CI decides
+  with reliable egress); findings from a running linter still block.
+  Found when the local npm registry path degraded mid-push.
