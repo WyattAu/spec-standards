@@ -25,9 +25,11 @@ Seed release.
   path bug in 0.1.0.
 - Gate softening with dated windows (README matrix): markdownlint,
   llms.txt, and truth-table advisories at tiers k/d until 2027-04;
-  em-dash and status stamps stay blocking everywhere. Precedent:
-  llvm-cov tier C "informational until". Rationale: 2026-10-31 estate
-  probe found 14/253 repos with llms.txt, 28 with AGENTS.md.
+  em-dash and status stamps stay blocking everywhere. Applied in BOTH
+  gates (doc-lint.sh and spec-audit.py repo mode; the first pilot run
+  caught the auditor miss). Precedent: llvm-cov tier C "informational
+  until". Rationale: 2026-10-31 estate probe found 14/253 repos with
+  llms.txt, 28 with AGENTS.md.
 - Estate rollout: registry docs blocks landed in engineering-standards
   (ADR 0010 there): 177 blocks from probes; spec-standards registered
   (infra/support).

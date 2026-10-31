@@ -99,10 +99,12 @@ def audit_repo(root: Path, tier: str, strict_freshness: bool) -> int:
             if "Oracle:" not in body and "No-oracle" not in body:
                 fails.append(f"{f.relative_to(root)}: no 'Oracle:' or 'No-oracle:' line (SPEC-CORE §6)")
 
-    # llms.txt (SC-10)
+    # llms.txt (SC-10): blocking at s/a; advisory at k/d until 2027-04
     llms = root / "llms.txt"
-    if tier in ("s", "k", "a") and not llms.exists():
+    if tier in ("s", "a") and not llms.exists():
         fails.append("llms.txt missing (SC-10)")
+    elif tier in ("k", "d") and not llms.exists():
+        advisories.append("llms.txt missing (SC-10; advisory until 2027-04 at this tier)")
     if llms.exists() and PLACEHOLDER_RE.search(llms.read_text(encoding="utf-8")):
         fails.append("llms.txt contains placeholders (SC-10)")
 
