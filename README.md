@@ -120,8 +120,10 @@ Pending (ordered):
    itself is one of them (196 hits): owner-reviewed, not mechanical.
 2. 5 HOLDA repos (tier A): authored artifacts (truth table, REQUIREMENTS,
    llms.txt) per the scraper-pilot pattern, then wire.
-3. homebite-scraper CI: blocked on account billing (spending limit for
-   private-repo minutes), not on the gate; rerun once billing clears.
+3. CI on the 7 private wired repos (homebite-scraper, homebite_docs,
+   deploy-webhook-rs, eventbusd, authbox, clyde-costing-verified,
+   flagsd): blocked on account billing (spending limit for private-repo
+   minutes), not on the gate; rerun once billing clears.
 4. Watch the CI wave drain; graduate wired repos to `current` as each
    earns conformance (truth table + llms.txt authored), not just CI green.
 5. Close the 14/253 llms.txt gap before the 2027-04 window; the gates
