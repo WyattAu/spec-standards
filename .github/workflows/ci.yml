@@ -32,3 +32,18 @@ jobs:
 
       - name: spec-audit (registry example, schema)
         run: python3 scripts/spec-audit.py --registry docs/registry-example.yml
+
+  projection-freshness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: check out standards-dist (projection repo)
+        uses: actions/checkout@v7
+        with:
+          repository: WyattAu/standards-dist
+          path: dist
+          persist-credentials: false
+
+      - name: SC-11 freshness (stale projection fails this gate)
+        run: dist/build.sh --check
