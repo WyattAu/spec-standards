@@ -99,16 +99,23 @@ def audit_repo(root: Path, tier: str, strict_freshness: bool) -> int:
             if "Oracle:" not in body and "No-oracle" not in body:
                 fails.append(f"{f.relative_to(root)}: no 'Oracle:' or 'No-oracle:' line (SPEC-CORE §6)")
 
-    # llms.txt (SC-10): blocking at s/a; advisory at k/d until 2027-04
+    # llms.txt (SC-10): blocking at s/a; k/d advisory until 2027-04, then
+    # the window escalates automatically (README matrix; same as doc-lint).
     llms = root / "llms.txt"
+    kd_blocking = datetime.date.today() >= datetime.date(2027, 4, 1)
     if tier in ("s", "a") and not llms.exists():
         fails.append("llms.txt missing (SC-10)")
     elif tier in ("k", "d") and not llms.exists():
-        advisories.append("llms.txt missing (SC-10; advisory until 2027-04 at this tier)")
+        msg = "llms.txt missing (SC-10; advisory until 2027-04 at this tier)"
+        (fails if kd_blocking else advisories).append(msg)
     if llms.exists() and PLACEHOLDER_RE.search(llms.read_text(encoding="utf-8")):
         fails.append("llms.txt contains placeholders (SC-10)")
 
     # freshness: projection must not predate the newest normative file (SC-10)
+    # Auto-strict at tiers s,k from 2027-01, or with --strict-freshness.
+    strict = strict_freshness or (
+        tier in ("s", "k") and datetime.date.today() >= datetime.date(2027, 1, 1)
+    )
     if llms.exists() and contract is not None:
         watched = sorted(root.rglob("SPEC*.md")) + [contract]
         watched = [f for f in watched if ".git" not in f.parts]
@@ -116,7 +123,7 @@ def audit_repo(root: Path, tier: str, strict_freshness: bool) -> int:
         mine = git_time(llms)
         if newest and mine and mine < newest:
             msg = "llms.txt predates the newest spec/contract commit (SC-10); regenerate"
-            (fails if strict_freshness else advisories).append(msg)
+            (fails if strict else advisories).append(msg)
 
     for a in advisories:
         print(f"ADVISORY: {a}")

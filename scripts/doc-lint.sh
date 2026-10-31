@@ -22,6 +22,14 @@ skip()    { echo "SKIP: $*"; }
 
 EM=$(printf '\342\200\224')   # the em-dash character, constructed not typed
 
+# Dated advisory windows (README matrix): gates escalate to blocking
+# automatically on their date. No manual flip, nothing to forget.
+TODAY=$(date +%Y%m%d)
+WINDOW_2027_04=20270401   # markdownlint / llms.txt / truth-table at k,d
+WINDOW_2027_01=20270101   # REQ cross-check at s; llms freshness at s,k
+SEV_KD="advisory"; [ "$TODAY" -ge "$WINDOW_2027_04" ] && SEV_KD="fail"
+SEV_0101="advisory"; [ "$TODAY" -ge "$WINDOW_2027_01" ] && SEV_0101="fail"
+
 # --- 1. Character rule (DOC-STYLE §1): no em-dash in any Markdown -------
 HITS=$(grep -rIn --include='*.md' "$EM" . --exclude-dir=.git 2>/dev/null || true)
 if [ -n "$HITS" ]; then
@@ -73,7 +81,7 @@ EOF3
 }
 case "$TIER" in
   s|a) truth_check fail ;;
-  k)   truth_check advisory ;;
+  k)   truth_check "$SEV_KD" ;;
   d)   skip "truth table not required at tier d" ;;
 esac
 
@@ -89,7 +97,7 @@ llms_check() {  # $1 = severity
 }
 case "$TIER" in
   s|a) llms_check fail ;;
-  k|d) llms_check advisory ;;
+  k|d) llms_check "$SEV_KD" ;;
 esac
 
 # --- 5. Oracle line (SPEC-CORE §6), tier S ------------------------------
@@ -115,15 +123,21 @@ if [ "$TIER" = "s" ] || [ "$REQ_CHECK" -eq 1 ]; then
     . --exclude-dir=.git 2>/dev/null | sort -u || true)
   ORPHANS=$(comm -23 <(printf '%s\n' "$SPEC_REQS" | sort -u) <(printf '%s\n' "$CODE_REQS" | sort -u) | sed '/^$/d' || true)
   if [ -n "$ORPHANS" ]; then
-    advisory "REQs defined in specs with no code tag (SPEC-CORE §4): $(echo "$ORPHANS" | tr '\n' ' ')"
+    if [ "$SEV_0101" = "fail" ]; then
+      fail "REQs defined in specs with no code tag (SPEC-CORE §4): $(echo "$ORPHANS" | tr '\n' ' ')"
+    else
+      advisory "REQs defined in specs with no code tag (SPEC-CORE §4): $(echo "$ORPHANS" | tr '\n' ' ')"
+    fi
   fi
 else
   skip "REQ cross-check not enabled (tier $TIER, no --req-check)"
 fi
 
 # --- 7. markdownlint (optional tool; used when installed) ---------------
-# Blocking at tier s; advisory at tiers k,a,d until 2027-04 (README matrix).
-md_fail() { if [ "$TIER" = "s" ]; then fail "$*"; else advisory "$*"; fi; }
+# Blocking at tier s; elsewhere advisory until 2027-04 (SEV_KD above).
+md_fail() {
+  if [ "$TIER" = "s" ] || [ "$SEV_KD" = "fail" ]; then fail "$*"; else advisory "$*"; fi
+}
 if command -v markdownlint >/dev/null 2>&1; then
   if [ -f .markdownlint.json ]; then
     markdownlint "**/*.md" --config .markdownlint.json || md_fail "markdownlint reported issues"

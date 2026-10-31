@@ -33,3 +33,16 @@ Seed release.
 - Estate rollout: registry docs blocks landed in engineering-standards
   (ADR 0010 there): 177 blocks from probes; spec-standards registered
   (infra/support).
+
+## 0.2.0 - 2026-10-31
+
+- Advisory windows are self-flipping: gates escalate to blocking
+  automatically on their matrix dates (2027-01: REQ cross-check at s,
+  llms freshness at s,k; 2027-04: markdownlint/llms/truth-table at k,d).
+  Implemented in both gates; nothing to flip by hand, no forgotten sweep.
+- spec-standards runs its own CI (`.github/workflows/ci.yml`): doc-lint s,
+  spec-audit repo mode, registry example schema; dogfood non-negotiable 5
+  now enforced by CI, not just locally.
+- Estate sweep: shared docs gate + bitrot + canonical markdownlint config
+  wired across the registered estate, pre-flighted per repo (em-dash
+  sweep applied where small and reviewed; large-prose repos held).

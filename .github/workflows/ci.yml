@@ -1,0 +1,34 @@
+# spec-standards own CI: mirrors the scripts directly (SC-9: scripts
+# canonical; CI mirrors; a gate that never runs on its own repo is a wish).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: doc-lint (tier s, dogfood)
+        run: scripts/doc-lint.sh s
+
+      - name: spec-audit (repo mode, dogfood)
+        run: |
+          python3 -m pip install --quiet pyyaml || true
+          python3 scripts/spec-audit.py --repo . --tier s
+
+      - name: spec-audit (registry example, schema)
+        run: python3 scripts/spec-audit.py --registry docs/registry-example.yml
