@@ -155,7 +155,7 @@ md_fail() {
 run_lint() {  # $1 = command...; findings on stdout+stderr, rc: 0 clean, 124 timeout, other = findings
   timeout "${MD_TIMEOUT:-120}" "$@" 2>&1
 }
-EXTRA_FIND=$(echo "$EXTRA_EXCLUDES" | sed "s/--exclude-dir/-not -path (\"*\/\"/g; s/$/\"*)/" | tr "\n" " ") 2>/dev/null
+EXTRA_FIND=""  # find-based SPEC discovery keeps built-in prunes only
 lint_one() {  # $@ = linter argv
   OUT=$(run_lint "$@"); rc=$?
   if [ $rc -eq 124 ]; then
