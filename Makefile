@@ -3,7 +3,7 @@
 TIER ?= s
 REGISTRY ?= ../engineering-standards/estate.yml
 
-.PHONY: help lint check audit registry ci
+.PHONY: help lint check audit registry triage ci
 
 help:
 	@echo "lint      - markdownlint over all Markdown (tool optional; SKIP when absent)"
@@ -33,3 +33,6 @@ registry:
 	fi
 
 ci: check audit
+
+triage:
+	@python3 scripts/doc-triage.py --repo . --registry $(REGISTRY)

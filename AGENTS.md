@@ -50,3 +50,4 @@ Any decision that changes an invariant, a schema, a gate, or the boundary
 with engineering-standards gets an ADR in `docs/adr/NNNN-*.md`
 (Status / Context / Decision / Consequences / Alternatives). Superseding
 an ADR keeps the original text visible.
+7. Routing question? `scripts/doc-triage.py --repo <path>` answers tier + gates mechanically (context-standards routing-contract).
