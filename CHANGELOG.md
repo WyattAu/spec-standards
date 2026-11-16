@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.1.0 - 2026-10-31
+
 - doc-triage.py: tier + gate-matrix router (SPEC-CORE §7/§8), `make triage` verb; standardizes the fact-router contract (context-standards routing-contract).
 
 Seed release.
